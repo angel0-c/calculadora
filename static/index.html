@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Avanzada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        let displayValue = '0';
+
+        function appendToDisplay(value) {
+            if (displayValue === '0') {
+                displayValue = value;
+            } else {
+                displayValue += value;
+            }
+            document.getElementById('display').textContent = displayValue;
+        }
+
+        function clearDisplay() {
+            displayValue = '0';
+            document.getElementById('display').textContent = displayValue;
+        }
+
+        function backspace() {
+            if (displayValue.length === 1) {
+                displayValue = '0';
+            } else {
+                displayValue = displayValue.slice(0, -1);
+            }
+            document.getElementById('display').textContent = displayValue;
+        }
+
+        async function calculate() {
+            try {
+                const response = await fetch('/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ expression: displayValue })
+                });
+                const data = await response.json();
+                if (data.result !== undefined) {
+                    displayValue = data.result.toString();
+                    document.getElementById('display').textContent = displayValue;
+                } else if (data.error) {
+                    displayValue = 'Error';
+                    document.getElementById('display').textContent = displayValue;
+                }
+            } catch (error) {
+                console.error('Error al calcular:', error);
+                displayValue = 'Error';
+                document.getElementById('display').textContent = displayValue;
+            }
+        }
+    </script>
+    <style>
+        /* Aquí se mantiene el estilo de tu código anterior */
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-300">
+    <div class="w-full max-w-md">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Calculadora</h1>
+        </div>
+        
+        <div class="calculator bg-white dark:bg-gray-800 p-6 rounded-2xl">
+            <div class="display bg-gray-50 dark:bg-gray-700 mb-4 p-4 rounded-lg text-right text-3xl font-semibold text-gray-800 dark:text-white" id="display">0</div>
+            
+            <div class="grid grid-cols-4 gap-3">
+                <button class="btn-clear btn col-span-2 py-4 px-2 rounded-lg bg-red-500 text-white font-bold text-xl" onclick="clearDisplay()">AC</button>
+                <button class="btn-operator btn py-4 px-2 rounded-lg bg-yellow-500 text-white font-bold text-xl" onclick="appendToDisplay(' / ')">/</button>
+                <button class="btn-operator btn py-4 px-2 rounded-lg bg-yellow-500 text-white font-bold text-xl" onclick="appendToDisplay(' * ')">×</button>
+                
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('7')">7</button>
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('8')">8</button>
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('9')">9</button>
+                <button class="btn-operator btn py-4 px-2 rounded-lg bg-yellow-500 text-white font-bold text-xl" onclick="appendToDisplay(' - ')">-</button>
+                
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('4')">4</button>
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('5')">5</button>
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('6')">6</button>
+                <button class="btn-operator btn py-4 px-2 rounded-lg bg-yellow-500 text-white font-bold text-xl" onclick="appendToDisplay(' + ')">+</button>
+                
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('1')">1</button>
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('2')">2</button>
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('3')">3</button>
+                <button class="btn-equals btn py-4 px-2 rounded-lg bg-green-500 text-white font-bold text-xl" onclick="calculate()">=</button>
+                
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('0')">0</button>
+                <button class="btn-number btn py-4 px-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-bold text-xl" onclick="appendToDisplay('.')">.</button>
+                <button class="btn py-4 px-2 rounded-lg bg-blue-500 text-white font-bold text-xl col-span-2" onclick="backspace()">
+                    <i class="fas fa-backspace"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
